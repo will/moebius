@@ -1,21 +1,16 @@
 h1. Moebius
 
-Script to convert Comic Book files (.cbr and .cbz) in PDF for portable reading.
+<pre>
+gem install moebius
+</pre>
+
+Gem to convert Comic Book files (.cbr and .cbz) in PDF for portable reading.
 
 h2. Usage
 
 <pre>
 <code>
-	cd moebius/
-	./moebius.rb example/Y-The_Last_Man-001-Excerpt.cbz
+	moebius .
 </code>
 </pre>
 
-It'll output a _Y-The_Last_Man-001-Excerpt.pdf_ file in the current directory.
-
-h2. Requirements
-
-* Ruby 1.8
-* Gems: rubygems, prawn
-* Unzip (for .cbz)
-* Unrar (for .cbr)
