@@ -5,6 +5,11 @@
 # Things Prawn can do to make this script nicer:
 #   * Allow :margins => [0,0,0,0] or :margins => :none (or something like that)  
 
+if ARGV[0].nil?
+  puts "usage:"
+  puts "moebius directory-or-cb[zr]-file"
+  exit 1
+end
 
 require "rubygems"    
 require "prawn"
@@ -12,11 +17,6 @@ require 'find'
 require 'fileutils'
 require 'tempfile'
 
-# Check filename exists
-if ARGV[0].nil?
-  print "Please enter a comic filename\n"
-  exit
-end
 
 def process_file(file)
   basename = File.basename(file, File.extname(file))
