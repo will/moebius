@@ -8,6 +8,7 @@
 
 require "rubygems"    
 require "prawn"
+require 'find'
 require 'fileutils'
 require 'tempfile'
 
@@ -17,28 +18,36 @@ if ARGV[0].nil?
   exit
 end
 
-basename = File.basename(ARGV[0], File.extname(ARGV[0]))
-target = "/#{Dir::tmpdir}/#{basename}/"
-                     
-# Extract comic images      
-FileUtils.mkdir_p target unless File.exists? target      
-`unzip -j #{ARGV[0]} -d #{target}` if File.extname(ARGV[0]) =~ /cbz/i
-`unrar e #{ARGV[0]} #{target}` if File.extname(ARGV[0]) =~ /cbr/i
-comicFiles = Dir["#{target}*.jpg"]      
+def process_file(file)
+  basename = File.basename(file, File.extname(file))
+  target = "/#{Dir::tmpdir}/#{basename}/".gsub(' ', '_')
 
-settings =  { :skip_page_creation => true,
-                   :bottom_margin => 0,        
-                      :top_margin => 0, 
-                    :right_margin => 0, 
-                     :left_margin => 0       }
- 
+# Extract comic images      
+  FileUtils.mkdir_p target unless File.exists? target      
+  `unzip -j "#{file}" -d #{target}` if File.extname(file) =~ /cbz/i
+  `unrar e "#{file}" #{target}` if File.extname(file) =~ /cbr/i
+  comicFiles = Dir["#{target}*.jpg"]      
+
+  settings =  { :skip_page_creation => true,
+                     :bottom_margin => 0,        
+                        :top_margin => 0, 
+                      :right_margin => 0, 
+                       :left_margin => 0       }
+   
 # Generate PDF file            
-Prawn::Document.generate("#{basename}.pdf", settings) do
-  comicFiles.each do |file|
-    start_new_page
-    image file, :at => [0,802], :height => 842
+  Prawn::Document.generate("#{basename}.pdf", settings) do
+    comicFiles.each do |file|
+      start_new_page
+      image file, :at => [0,802], :height => 842
+    end
   end
-end
 
 # Remove tmp files
-FileUtils.rm_r target
+  FileUtils.rm_r target
+end
+
+Find.find(ARGV[0]) do |path|
+  next if FileTest.directory? path
+  next unless File.extname(path) =~ /cb[zr]/i
+  process_file path
+end
